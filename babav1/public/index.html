@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#633DFF">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="爸爸说书">
+  
+  <title>爸爸说书 · 把书讲成睡前故事</title>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 背景装饰 -->
+    <div class="bg-decoration">
+      <div class="bg-blob blob-1"></div>
+      <div class="bg-blob blob-2"></div>
+      <div class="bg-blob blob-3"></div>
+    </div>
+
+    <!-- 头部 -->
+    <header class="app-header">
+      <div class="header-top">
+        <span class="greeting">晚上好 🌙</span>
+      </div>
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#633DFF"/>
+            <path d="M16 14h16c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2H16c-1.1 0-2-.9-2-2V16c0-1.1.9-2 2-2z" fill="#fff"/>
+            <path d="M18 20h12M18 24h12M18 28h8" stroke="#633DFF" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>爸爸说书</h1>
+          <p class="tagline">把书讲成睡前故事</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="app-main">
+      
+      <!-- 上传区域 -->
+      <section class="upload-section" id="uploadSection">
+        <!-- 功能介绍卡片 -->
+        <div class="intro-card">
+          <div class="intro-illustration">
+            <div class="illustration-scene">
+              <div class="moon">🌙</div>
+              <div class="stars">✨</div>
+              <div class="person-reading">
+                <svg viewBox="0 0 120 100" fill="none">
+                  <!-- 椅子 -->
+                  <ellipse cx="60" cy="90" rx="35" ry="8" fill="#E2CCFF"/>
+                  <rect x="35" y="50" width="50" height="40" rx="10" fill="#FF9315"/>
+                  <!-- 人物 -->
+                  <circle cx="60" cy="30" r="15" fill="#FFD6B3"/>
+                  <path d="M45 45 Q60 70 75 45" fill="#633DFF"/>
+                  <!-- 书 -->
+                  <rect x="50" y="55" width="20" height="15" rx="2" fill="#fff"/>
+                  <path d="M52 60h16M52 65h12" stroke="#633DFF" stroke-width="1.5"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <h2 class="intro-title">发现新世界</h2>
+          <p class="intro-desc">上传一本书，爸爸用讲故事的方式，让枯燥的知识变成有趣的睡前故事</p>
+        </div>
+
+        <!-- 上传卡片 -->
+        <div class="upload-card" id="uploadZone">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 15V3m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <p class="upload-text">点击上传 PDF 书籍</p>
+          <p class="upload-hint">支持最大 25MB</p>
+          <input type="file" id="fileInput" accept=".pdf,application/pdf" hidden>
+        </div>
+        
+        <!-- PDF 预览 -->
+        <div class="pdf-preview" id="pdfPreview" style="display: none;">
+          <div class="preview-card">
+            <div class="book-cover">
+              <canvas id="pdfCanvas" class="pdf-canvas"></canvas>
+            </div>
+            <div class="book-info">
+              <span class="file-name" id="fileName"></span>
+              <span class="file-size" id="fileSize"></span>
+            </div>
+            <button class="btn-remove" id="removeFile">✕</button>
+          </div>
+        </div>
+        
+        <!-- 开始按钮 -->
+        <button class="btn-primary" id="startBtn" disabled>
+          开始讲故事
+        </button>
+      </section>
+
+      <!-- 进度区域 -->
+      <section class="progress-section" id="progressSection" style="display: none;">
+        <div class="progress-card">
+          <div class="progress-illustration">
+            <div class="book-animation">📚</div>
+          </div>
+          <h2 class="progress-title" id="progressTitle">正在阅读...</h2>
+          <p class="progress-desc" id="progressDesc">爸爸正在仔细读这本书</p>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 说书稿展示区域 -->
+      <section class="result-section" id="resultSection" style="display: none;">
+        <!-- 控制栏 -->
+        <div class="player-card">
+          <div class="now-playing-info">
+            <div class="playing-icon">🎧</div>
+            <div class="playing-text">
+              <span class="now-playing" id="nowPlaying">准备就绪</span>
+              <span class="duration" id="duration"></span>
+            </div>
+          </div>
+          
+          <div class="control-buttons">
+            <button class="btn-control" id="prevBtn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
+            </button>
+            <button class="btn-control btn-play" id="playPauseBtn">
+              <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button class="btn-control" id="nextBtn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm10 0h2V6h-2v12z"/></svg>
+            </button>
+            <button class="btn-control" id="stopBtn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 内容展示 -->
+        <div class="script-content" id="scriptContent">
+          <!-- 动态生成 -->
+        </div>
+
+        <!-- 返回按钮 -->
+        <button class="btn-secondary" id="newBookBtn">
+          🌙 换一个故事
+        </button>
+      </section>
+
+    </main>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+      <a href="#" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>首页</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+        <span>书架</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- 音频播放器 (隐藏) -->
+  <audio id="audioPlayer" preload="auto"></audio>
+
+  <!-- Toast 通知 -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "爸爸说书 · 把书讲成睡前故事",
+  "short_name": "爸爸说书",
+  "description": "像小时候爸爸讲睡前故事一样，把书变成温暖有趣的故事",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8F6FF",
+  "theme_color": "#633DFF",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
