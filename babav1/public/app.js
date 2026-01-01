@@ -206,18 +206,24 @@ async function summarizeBook() {
     DOM.uploadSection.style.display = 'none';
     DOM.progressSection.style.display = 'flex';
     
-    // 阶段1: 上传
+    // 阶段1: 读取文件
     updateProgress(20, '📤 收到啦', '正在打开这本书...');
     
-    const formData = new FormData();
-    formData.append('file', state.file);
+    // 将文件转为 base64
+    const pdfBase64 = await fileToBase64(state.file);
     
     // 阶段2: 处理
     updateProgress(40, '📖 正在阅读', '爸爸正在仔细读这本书...');
     
     const response = await fetch(`${CONFIG.apiBase}/api/summarize-book`, {
       method: 'POST',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        pdfBase64,
+        filename: state.file.name,
+      }),
     });
     
     // 阶段3: 生成
@@ -709,6 +715,22 @@ function startNewBook() {
   DOM.resultSection.style.display = 'none';
   DOM.progressSection.style.display = 'none';
   DOM.uploadSection.style.display = 'block';
+}
+
+/**
+ * 将文件转换为 base64
+ */
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      // 去掉 data:application/pdf;base64, 前缀
+      const base64 = reader.result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 // ============================================
