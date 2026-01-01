@@ -1,8 +1,36 @@
 {
+  "version": 2,
   "builds": [
     {
-      "src": "**/*",
+      "src": "api/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
       "use": "@vercel/static"
     }
-  ]
+  ],
+  "routes": [
+    {
+      "src": "/api/summarize-book",
+      "dest": "/api/summarize-book.js"
+    },
+    {
+      "src": "/api/tts",
+      "dest": "/api/tts.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
+  ],
+  "functions": {
+    "api/summarize-book.js": {
+      "maxDuration": 120,
+      "memory": 1024
+    },
+    "api/tts.js": {
+      "maxDuration": 30
+    }
+  }
 }
